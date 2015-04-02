@@ -12,8 +12,10 @@ var config = require('./config');
 // Pre-load the keyfile from the OS
 // prevents errors when starting JWT
 var key;
-if (fs.existsSync(config.key))
-    key = fs.readFileSync(config.key);
+if (config.key)
+    key = config.key;      
+else if (config.key_file && fs.existsSync(config.key_file))
+    key = fs.readFileSync(config.key_file);
 else
     key = null;
 
