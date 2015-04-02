@@ -2,13 +2,13 @@
 
 *This project is still under construction.*
 
-<!--# Note: This repo is deployed automatically to Heroku. Push only working code to master! -->
+# Note: This repo is deployed automatically to Heroku. Push only working code to master!
 
 A lightweight system for publishing analytics data from Google Analytics profiles.
 
 Available reports are named and described in [`reports.json`](reports.json). For now, they're hardcoded into the repository.
 
-### Setup
+### Installing
 
 * Install through npm:
 
@@ -34,18 +34,6 @@ export ANALYTICS_REPORT_IDS="ga:XXXXXX"
 export ANALYTICS_KEY_PATH="/path/to/secret_key.pem"
 ```
 You may wish to manage these using [`autoenv`](https://github.com/kennethreitz/autoenv).
-
-To find your Google Analytics view ID:
-
-  1. Sign in to your Analytics account.
-  1. Select the Admin tab.
-  1. Select an account from the dropdown in the ACCOUNT column.
-  1. Select a property from the dropdown in the PROPERTY column.
-  1. Select a view from the dropdown in the VIEW column.
-  1. Click "View Settings"
-  1. Copy the view ID.  You'll need to enter it with `ga:` as a prefix.
-
-* Make sure your computer or server is syncing its time with the world over NTP. Your computer's time will need to match those on Google's servers for the authentication to work.
 
 * Test your configuration by printing a report to STDOUT:
 
@@ -98,7 +86,7 @@ A report might look something like this:
   },
   "meta": {
     "name": "Devices",
-    "description": "Weekly desktop/mobile/tablet visits by day for all sites."
+    "description": "Weekly desktop/mobile/tablet visits by day for all .gov sites tracked by the U.S. federal government's Digital Analytics Program."
   },
   "data": [
     {

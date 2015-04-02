@@ -22,14 +22,13 @@ module.exports = {
   },
 
   account: {
-    ids: process.env.ANALYTICS_REPORT_IDS,
-    // needed for realtime reports which don't include hostname
-    // leave blank if your view includes hostnames
-    hostname: process.env.ANALYTICS_HOSTNAME || ""
+    ids: process.env.ANALYTICS_REPORT_IDS
   },
 
-  static: {
-    path: '../analytics.usa.gov/'
+  mongo: {
+    host: process.env.MONGO_HOST,
+    database: process.env.MONGO_DATABASE
   }
+
 
 };

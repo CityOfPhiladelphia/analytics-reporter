@@ -1,25 +1,20 @@
 // All routes for the app.
 var models = require('./models'),
-    data = require('./data_update'),
-    path = require('path');
-
-String.prototype.endsWith = function (s) {
-  return this.length >= s.length && this.substr(this.length - s.length) == s;
-}
+    config = require('../config'),
+    data = require('./data_update');
 
 module.exports = function(app, models) {
 
-    app.get('/data/live/', function(req, res) {
+    app.get('/data/api/', function(req, res) {
         res.send("API Data!");
     });
 
-    app.get('/data/live/:name', function(req, res) {
-      var name = req.params.name;
-      if (name.endsWith(".json")) {
-        name = name.substring(0, name.length-5);
-      }
-      var doc = models.data[name];
-      data.get_or_update(null, res, doc);
+    app.get('/data/api/:name', function(req, res) {
+        models.Analytics.findOne({
+            name: req.params.name
+        }, function(err, doc) {
+            data.get_or_update(err, res, doc);
+        });
     });
 
 };
