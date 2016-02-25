@@ -10,6 +10,7 @@ var googleapis = require('googleapis'),
 
 var config = require('./config');
 
+<<<<<<< HEAD
 // Pre-load the keyfile from the OS
 // prevents errors when starting JWT
 var key;
@@ -23,6 +24,8 @@ else if (config.key_file && fs.existsSync(config.key_file)) {
 else
   key = null;
 
+=======
+>>>>>>> c7d5c5f0a2abd77e18e035ed859ce68f176c3fe0
 var jwt = new googleapis.auth.JWT(
     config.email,
     null,
@@ -126,6 +129,7 @@ var Analytics = {
         "ga:hostname": "domain",
         "ga:browser" : 'browser',
         "ga:browserVersion" : "browser_version",
+<<<<<<< HEAD
         "ga:source": "source",
         "ga:pagePath": "page",
         "ga:pageTitle": "page_title",
@@ -138,6 +142,8 @@ var Analytics = {
         "rt:city": "city",
         "rt:totalEvents": "total_events",
         "rt:eventLabel": "event_label"
+=======
+>>>>>>> c7d5c5f0a2abd77e18e035ed859ce68f176c3fe0
     },
 
     // The OSes we care about for the OS breakdown. The rest can be "Other".
@@ -186,6 +192,7 @@ var Analytics = {
         // this is destructive to the original data, but should be fine
         delete result.query.ids;
 
+<<<<<<< HEAD
         // If you use a filter that results in no data, you get null
         // back from google and need to protect against it.
         if (!data || !data.rows) {
@@ -223,6 +230,8 @@ var Analytics = {
 
                     var field = Analytics.mapping[data.columnHeaders[j].name] || data.columnHeaders[j].name;
                     var value = row[j];
+=======
+>>>>>>> c7d5c5f0a2abd77e18e035ed859ce68f176c3fe0
 
                     if (field == "date")
                         value = Analytics.date_format(value);
@@ -230,6 +239,7 @@ var Analytics = {
                     point[field] = value;
                 }
 
+<<<<<<< HEAD
                 if (report.realtime && config.account.hostname)
                   point.domain = config.account.hostname;
 
@@ -261,6 +271,7 @@ var Analytics = {
                 for (var i=0; i<Analytics.oses.length; i++)
                     result.totals.os[Analytics.oses[i]] = 0;
                 result.totals.os["Other"] = 0;
+=======
 
                 for (var i=0; i<result.data.length; i++) {
                     var os = result.data[i].os;
@@ -273,6 +284,7 @@ var Analytics = {
                 }
             }
 
+<<<<<<< HEAD
             if (_.startsWith(report.name, "windows")) {
                 // initialize all cared-about versions to 0
                 result.totals.os_version = {};
@@ -289,9 +301,14 @@ var Analytics = {
 
                     result.totals.os_version[version] += parseInt(result.data[i].visits);
                 }
+=======
+>>>>>>> c7d5c5f0a2abd77e18e035ed859ce68f176c3fe0
             }
 
+<<<<<<< HEAD
             if (_.startsWith(report.name, "browsers")) {
+=======
+>>>>>>> c7d5c5f0a2abd77e18e035ed859ce68f176c3fe0
 
                 result.totals.browser = {};
                 for (var i=0; i<Analytics.browsers.length; i++)
@@ -308,6 +325,7 @@ var Analytics = {
                 }
             }
 
+<<<<<<< HEAD
             if (_.startsWith(report.name, "ie")) {
                 // initialize all cared-about versions to 0
                 result.totals.ie_version = {};
@@ -324,13 +342,18 @@ var Analytics = {
 
                     result.totals.ie_version[version] += parseInt(result.data[i].visits);
                 }
+=======
+>>>>>>> c7d5c5f0a2abd77e18e035ed859ce68f176c3fe0
             }
+<<<<<<< HEAD
             
             // presumably we're organizing these by date
             if ((result.data.length > 0) && (result.data[0].date)) {
                 result.totals.start_date = result.data[0].date;
                 result.totals.end_date = result.data[result.data.length-1].date;
             }
+=======
+>>>>>>> c7d5c5f0a2abd77e18e035ed859ce68f176c3fe0
         }
 
         return result;
