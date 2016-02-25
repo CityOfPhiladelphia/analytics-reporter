@@ -1,10 +1,15 @@
 ## Analytics Reporter
 
+=======
+*This project is still under construction.*
+
+# Note: This repo is deployed automatically to Heroku. Push only working code to master!
+
 A lightweight system for publishing analytics data from Google Analytics profiles.
 
 Available reports are named and described in [`reports.json`](reports/reports.json). For now, they're hardcoded into the repository.
 
-### Setup
+### Installing
 
 * To run the utility on your computer, install it through npm:
 
@@ -60,6 +65,7 @@ export ANALYTICS_KEY="-----BEGIN PRIVATE KEY-----
 
 * Make sure your computer or server is syncing its time with the world over NTP. Your computer's time will need to match those on Google's servers for the authentication to work.
 
+>>>>>>> c7d5c5f0a2abd77e18e035ed859ce68f176c3fe0
 * Test your configuration by printing a report to STDOUT:
 
 ```bash
@@ -132,7 +138,7 @@ A report might look something like this:
   },
   "meta": {
     "name": "Devices",
-    "description": "Weekly desktop/mobile/tablet visits by day for all sites."
+    "description": "Weekly desktop/mobile/tablet visits by day for all .gov sites tracked by the U.S. federal government's Digital Analytics Program."
   },
   "data": [
     {
