@@ -1,9 +1,9 @@
 {
   "name": "analytics-reporter",
-  "version": "0.4.3",
+  "version": "1.1.1",
   "description": "A lightweight command line tool for reporting and publishing analytics data from a Google Analytics account.",
   "keywords": ["analytics", "google analytics"],
-  "homepage": "https://github.com/18f/analytics-reporter",
+  "homepage": "https://github.com/18F/analytics-reporter",
   "license": "CC0-1.0",
   "scripts": {
     "start": "node app.js",
@@ -17,12 +17,16 @@
     {
       "name": "Eric Mill",
       "email": "eric.mill@gsa.gov"
+    },
+    {
+      "name": "Lauren Ancona",
+      "email": "lauren.ancona@phila.gov"
     }
   ],
   "files": [
-    "bin", "test",
+    "bin", "test", "reports",
     "analytics.js", "config.js",
-    "reports.json", "package.json",
+    "package.json",
     "*.md"
   ],
   "engines": {"node": ">=0.10.0"},
@@ -34,22 +38,24 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/18f/analytics-reporter.git"
+    "url": "git://github.com/18F/analytics-reporter.git"
   },
   "bugs": {
-    "url": "https://github.com/18f/analytics-reporter/issues"
+    "url": "https://github.com/18F/analytics-reporter/issues"
   },
   "dependencies": {
-    "googleapis": "^1.0.21",
+    "googleapis": "^2.1.5",
     "node-schedule": "^0.1.13",
     "minimist": "*",
     "async": "*",
     "aws-sdk": "*",
-    "fast-csv": "*"
+    "fast-csv": "*",
+    "lodash": "*"
   },
   "devDependencies": {
     "body-parser": "~1.8.1",
     "express": "~4.9.0",
+    "ejs": "~2.3.1"
     "mongoose": "^3.8.19"
   }
 }

@@ -4,6 +4,7 @@ require('mongoose').connect('mongodb://' + mongo.host + '/' + mongo.database);
 
 // Define the app, and middleware.
 var express = require('express'),
+    ejs = require('ejs'),
     app = express();
 app.use(require('body-parser').json());
 app.set('port', process.env.PORT || 3000);
@@ -17,6 +18,12 @@ app.get('/', function (req, res) {
 require('./routes')(app, models);
 
 
+// Set up templates
+app.set('views', config.static.path);
+app.set('view engine', 'ejs');
+
+app.disable('etag');
+
 //init model
 var async = require("async"),
     Analytics = require("../analytics"),
@@ -26,6 +33,14 @@ time_mapper = {'daily': 86400000, 'hourly': 3600000, 'realtime': 10000}
 
 var eachReport = function(name, callback) {
     var report = Analytics.reports[name];
+    var doc = {
+        name: name,
+        update_interval: time_mapper[report.frequency],
+        last_update: 0,
+        query: report.query,
+        filters: null,
+        realtime: report.realtime
+    };
         var doc = new models.Analytics({
             name: name,
             update_interval: time_mapper[report.frequency],

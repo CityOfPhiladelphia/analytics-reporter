@@ -5,9 +5,23 @@
 var googleapis = require('googleapis'),
     ga = googleapis.analytics('v3'),
     fs = require('fs'),
-    path = require('path');
+    path = require('path'),
+    _ = require('lodash');
 
 var config = require('./config');
+
+// Pre-load the keyfile from the OS
+// prevents errors when starting JWT
+var key;
+if (config.key)
+    key = config.key;
+else if (config.key_file && fs.existsSync(config.key_file)) {
+    key = fs.readFileSync(config.key_file);
+    if (config.key_file.search(".json$"))
+        key = JSON.parse(key).private_key;
+}
+else
+  key = null;
 
 var jwt = new googleapis.auth.JWT(
     config.email,
@@ -16,9 +30,8 @@ var jwt = new googleapis.auth.JWT(
     ['https://www.googleapis.com/auth/analytics.readonly']
 );
 
-
 // The reports we want to run.
-var reports_path = path.join(__dirname, "reports.json");
+var reports_path = config.reports_file || (path.join(__dirname, "reports/reports.json"));
 var reports = JSON.parse(fs.readFileSync(reports_path)).reports;
 var by_name = {};
 for (var i=0; i<reports.length; i++)
@@ -31,6 +44,9 @@ var Analytics = {
     reports: by_name,
 
     query: function(report, callback) {
+
+        // Abort if the report isn't defined.
+        if (!report) return callback();
 
         // Insert IDs and auth data. Dupe the object so it doesn't
         // modify the report object for later work.
@@ -51,8 +67,15 @@ var Analytics = {
         query['samplingLevel'] = "HIGHER_PRECISION";
 
         // Optional filters.
+        var filters = [];
         if (report.query.filters)
-            query.filters = report.query.filters.join(",");
+            filters = filters.concat(report.query.filters);
+
+        if (report.filters)
+            filters = filters.concat(report.filters);
+
+        if (filters.length > 0)
+            query.filters = filters.join(";");
 
         query['max-results'] = report.query['max-results'] || 10000;
 
@@ -103,6 +126,18 @@ var Analytics = {
         "ga:hostname": "domain",
         "ga:browser" : 'browser',
         "ga:browserVersion" : "browser_version",
+        "ga:source": "source",
+        "ga:pagePath": "page",
+        "ga:pageTitle": "page_title",
+        "ga:pageviews": "visits",
+        "ga:country": "country",
+        "ga:city": 'city',
+        "ga:eventLabel": "event_label",
+        "ga:totalEvents": "total_events",
+        "rt:country": "country",
+        "rt:city": "city",
+        "rt:totalEvents": "total_events",
+        "rt:eventLabel": "event_label"
         "ga:source": "source"
     },
 
@@ -110,24 +145,29 @@ var Analytics = {
     // These are the extract strings used by Google Analytics.
     oses: [
         "Android", "BlackBerry",  "Windows Phone", "iOS",
-        "Linux", "Macintosh", "Windows"
+        "Linux", "Macintosh", "Windows", "(not set)", "Chrome OS",
+        "Nokia", "Samsung", "SymbianOS", "Xbox", "Firefox OS",
+        "Nintendo Wii", "Playstation 3", "FreeBSD", "Playstation Vita",
+        "Google TV", "SunOS", "LG", "Nintendo 3DS"
     ],
 
     // The versions of Windows we care about for the Windows version breakdown.
     // The rest can be "Other". These are the exact strings used by Google Analytics.
     windows_versions: [
-        "XP", "Vista", "7", "8", "8.1"
+        "XP", "Vista", "7", "8", "8.1", "10"
     ],
 
     // The browsers we care about for the browser report. The rest are "Other"
     //  These are the exact strings used by Google Analytics.
     browsers: [
-        "Internet Explorer", "Chrome", "Safari", "Firefox", "Android Browser",
+        "Internet Explorer", "Edge", "Chrome", "Safari", "Firefox", "Android Browser",
         "Safari (in-app)", "Amazon Silk", "Opera", "Opera Mini",
-        "IE with Chrome Frame", "BlackBerry", "UC Browser"
+        "IE with Chrome Frame", "BlackBerry", "UC Browser", "YaBrowser",
+        "Maxthon", "Coc Coc"
     ],
 
     // The versions of IE we care about for the IE version breakdown.
+    // "Edge" is considered a separate browser in Google Analytics, appears above.
     // The rest can be "Other". These are the exact strings used by Google Analytics.
     ie_versions: [
         "11.0", "10.0", "9.0", "8.0", "7.0", "6.0"
@@ -147,6 +187,43 @@ var Analytics = {
         // this is destructive to the original data, but should be fine
         delete result.query.ids;
 
+        // If you use a filter that results in no data, you get null
+        // back from google and need to protect against it.
+        if (!data || !data.rows) {
+          return result;
+        }
+
+        // datestamp all reports, will be serialized in JSON as ISO 8601
+        result.taken_at = new Date();
+
+        // data.rows is missing if there are no results
+        if (data.totalResults > 0) {
+
+            // get indices of column headers, for reference in client-side thresholds
+            var columnIndices = {};
+            for (var c = 0; c < data.columnHeaders.length; c++)
+                columnIndices[data.columnHeaders[c].name] = c;
+
+            // Calculate each individual data point.
+            for (var i=0; i<data.rows.length; i++) {
+                var row = data.rows[i];
+
+                // allow client-side imposition of a value threshold, where it can't
+                // be done at the server-side (e.g. metric filters on RT reports)
+                if (report.threshold) {
+                    if (parseInt(row[columnIndices[report.threshold.field]]) < report.threshold.value)
+                        continue;
+                }
+
+                var point = {};
+                for (var j=0; j<row.length; j++) {
+
+                    // Some reports may decide to cut fields from the output.
+                    if (report.cut && _.contains(report.cut, data.columnHeaders[j].name))
+                        continue;
+
+                    var field = Analytics.mapping[data.columnHeaders[j].name] || data.columnHeaders[j].name;
+                    var value = row[j];
         // Calculate each individual data point.
         for (var i=0; i<data.rows.length; i++) {
             var row = data.rows[i];
@@ -159,6 +236,37 @@ var Analytics = {
                 if (field == "date")
                     value = Analytics.date_format(value);
 
+                if (report.realtime && config.account.hostname)
+                  point.domain = config.account.hostname;
+
+                result.data.push(point);
+            }
+
+            // Go through those data points to calculate totals.
+            // Right now, this is totally report-specific.
+            if ((result.data.length > 0) && ("visitors" in result.data[0])) {
+                result.totals.visitors = 0;
+                for (var i=0; i<result.data.length; i++)
+                    result.totals.visitors += parseInt(result.data[i].visitors);
+            }
+            if ((result.data.length > 0) && ("visits" in result.data[0])) {
+                result.totals.visits = 0;
+                for (var i=0; i<result.data.length; i++)
+                    result.totals.visits += parseInt(result.data[i].visits);
+            }
+
+            if (_.startsWith(report.name, "devices")) {
+                result.totals.devices = {mobile: 0, desktop: 0, tablet: 0};
+                for (var i=0; i<result.data.length; i++)
+                    result.totals.devices[result.data[i].device] += parseInt(result.data[i].visits);
+            }
+
+            if (_.startsWith(report.name, "os")) {
+                // initialize all cared-about OSes to 0
+                result.totals.os = {};
+                for (var i=0; i<Analytics.oses.length; i++)
+                    result.totals.os[Analytics.oses[i]] = 0;
+                result.totals.os["Other"] = 0;
                 point[field] = value;
             }
 
@@ -202,6 +310,12 @@ var Analytics = {
             }
         }
 
+            if (_.startsWith(report.name, "windows")) {
+                // initialize all cared-about versions to 0
+                result.totals.os_version = {};
+                for (var i=0; i<Analytics.windows_versions.length; i++)
+                    result.totals.os_version[Analytics.windows_versions[i]] = 0;
+                result.totals.os_version["Other"] = 0;
         if (report.name == "windows") {
             // initialize all cared-about versions to 0
             result.totals.os_version = {};
@@ -220,6 +334,7 @@ var Analytics = {
             }
         }
 
+            if (_.startsWith(report.name, "browsers")) {
         if (report.name == "browsers") {
 
             result.totals.browser = {};
@@ -237,6 +352,12 @@ var Analytics = {
             }
         }
 
+            if (_.startsWith(report.name, "ie")) {
+                // initialize all cared-about versions to 0
+                result.totals.ie_version = {};
+                for (var i=0; i<Analytics.ie_versions.length; i++)
+                    result.totals.ie_version[Analytics.ie_versions[i]] = 0;
+                result.totals.ie_version["Other"] = 0;
         if (report.name == "ie") {
             // initialize all cared-about versions to 0
             result.totals.ie_version = {};
@@ -252,6 +373,12 @@ var Analytics = {
                     version = "Other";
 
                 result.totals.ie_version[version] += parseInt(result.data[i].visits);
+            }
+            
+            // presumably we're organizing these by date
+            if ((result.data.length > 0) && (result.data[0].date)) {
+                result.totals.start_date = result.data[0].date;
+                result.totals.end_date = result.data[result.data.length-1].date;
             }
         }
 
