@@ -126,7 +126,6 @@ var Analytics = {
         "ga:hostname": "domain",
         "ga:browser" : 'browser',
         "ga:browserVersion" : "browser_version",
-<<<<<<< HEAD
         "ga:source": "source",
         "ga:pagePath": "page",
         "ga:pageTitle": "page_title",
