@@ -133,11 +133,13 @@ var Analytics = {
         "ga:country": "country",
         "ga:city": 'city',
         "ga:eventLabel": "event_label",
+        "ga:eventAction": "event_action",
         "ga:totalEvents": "total_events",
         "rt:country": "country",
         "rt:city": "city",
         "rt:totalEvents": "total_events",
-        "rt:eventLabel": "event_label"
+        "rt:eventLabel": "event_label",
+        "rt:eventAction": "event_action"
     },
 
     // The OSes we care about for the OS breakdown. The rest can be "Other".

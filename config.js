@@ -32,7 +32,7 @@ module.exports = {
   },
 
   static: {
-    path: '../analytics.usa.gov/'
+    path: '../analytics.phila.gov/'
   }
 
 };
