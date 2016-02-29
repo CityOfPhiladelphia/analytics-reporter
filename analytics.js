@@ -135,7 +135,7 @@ var Analytics = {
         "ga:eventLabel": "event_label",
         "ga:eventAction": "event_action",
         "ga:totalEvents": "total_events",
-        "ga:dimension1": "full_url",
+        "ga:dimension1": "dimension1",
         "rt:country": "country",
         "rt:city": "city",
         "rt:totalEvents": "total_events",
