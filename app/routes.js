@@ -52,6 +52,21 @@ module.exports = function(app, models) {
         doc.filters = [ filters ];
       }
       data.get_or_update(null, res, doc);
+    config = require('../config'),
+    data = require('./data_update');
+
+module.exports = function(app, models) {
+
+    app.get('/data/api/', function(req, res) {
+        res.send("API Data!");
+    });
+
+    app.get('/data/api/:name', function(req, res) {
+        models.Analytics.findOne({
+            name: req.params.name
+        }, function(err, doc) {
+            data.get_or_update(err, res, doc);
+        });
     });
 
 };
