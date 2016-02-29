@@ -259,6 +259,7 @@
       "meta": {
         "name": "Internet Service Providers (30 Days)",
         "description": "Internet service providers, measured by visits, for the last 30 days."
+      }
     }
   ]
 }
