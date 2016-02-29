@@ -135,13 +135,12 @@ var Analytics = {
         "ga:eventLabel": "event_label",
         "ga:eventAction": "event_action",
         "ga:totalEvents": "total_events",
-        "ga:dimension1": "full_url", // custom dimension slot 1: unaltered request URI (Full URL)
+        "ga:dimension1": "full_url",
         "rt:country": "country",
         "rt:city": "city",
         "rt:totalEvents": "total_events",
         "rt:eventLabel": "event_label",
-        "rt:eventAction": "event_action"
-        "rt:eventLabel": "event_label"
+        "rt:eventAction": "event_action",
         "ga:source": "source"
     },
 
