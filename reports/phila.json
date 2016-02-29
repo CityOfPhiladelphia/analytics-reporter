@@ -184,7 +184,7 @@
       "name": "top-downloads-7-days",
       "frequency": "daily",
       "query": {
-        "dimensions": ["ga:pageTitle", "ga:eventLabel", "ga:pagePath"],
+        "dimensions": ["ga:pageTitle", "ga:eventLabel", "ga:pagePath", "ga:dimension1"],
         "metrics": ["ga:totalEvents"],
         "filters": ["ga:eventAction=~ownload"],
         "start-date": "7daysAgo",
