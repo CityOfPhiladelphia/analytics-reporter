@@ -133,11 +133,14 @@ var Analytics = {
         "ga:country": "country",
         "ga:city": 'city',
         "ga:eventLabel": "event_label",
+        "ga:eventAction": "event_action",
         "ga:totalEvents": "total_events",
+        "ga:dimension1": "dimension1",
         "rt:country": "country",
         "rt:city": "city",
         "rt:totalEvents": "total_events",
-        "rt:eventLabel": "event_label"
+        "rt:eventLabel": "event_label",
+        "rt:eventAction": "event_action",
         "ga:source": "source"
     },
 
