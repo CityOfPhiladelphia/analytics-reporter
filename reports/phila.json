@@ -248,7 +248,7 @@
       "name": "service-providers-30-days",
       "frequency": "daily",
       "query": {
-        "dimensions": ["ga:networkLocation"],
+        "dimensions": ["ga:networkLocation", "ga:networkDomain"],
         "metrics": ["ga:sessions"],
         "start-date": "30daysAgo",
         "end-date": "yesterday",
