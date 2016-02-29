@@ -164,31 +164,10 @@
       }
 },
     {
-      "name": "second-level-domains",
-      "frequency": "daily",
-      "cut": ["ga:sessions"],
-      "query": {
-        "dimensions": ["ga:hostname"],
-        "metrics": ["ga:sessions"],
-        "filters": [
-"ga:sessions>4",
-"ga:hostname=~^[^\\.]+\\.[^\\.]+$"
-],
-        "start-date": "14daysAgo",
-        "end-date": "yesterday",
-        "sort": "ga:hostname",
-        "max-results": 10000
-      },
-      "meta": {
-        "name": "Participating second-level domains.",
-        "description": "Participating second-level domains over the last 2 weeks."
-      }
-},
-    {
       "name": "top-downloads-yesterday",
       "frequency": "daily",
       "query": {
-        "dimensions": ["ga:pageTitle", "ga:eventLabel", "ga:pagePath"],
+        "dimensions": ["ga:pageTitle", "ga:eventLabel", "ga:pagePath", "ga:dimension1"],
         "metrics": ["ga:totalEvents"],
         "filters": ["ga:eventAction=~ownload"],
         "start-date": "yesterday",
@@ -205,9 +184,9 @@
       "name": "top-downloads-7-days",
       "frequency": "daily",
       "query": {
-        "dimensions": ["ga:pageTitle", "ga:eventLabel", "ga:pagePath"],
+        "dimensions": ["ga:pageTitle", "ga:eventLabel", "ga:pagePath", "ga:dimension1"],
         "metrics": ["ga:totalEvents"],
-        "filters": ["ga:eventAction=~ownload", "ga:eventLabel!~swf$"],
+        "filters": ["ga:eventAction=~ownload"],
         "start-date": "7daysAgo",
         "end-date": "yesterday",
         "sort": "-ga:totalEvents",
